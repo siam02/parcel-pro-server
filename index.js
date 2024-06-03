@@ -78,6 +78,23 @@ async function run() {
         });
 
 
+        app.get('/users/delivery-man/:email', verifyToken, async (req, res) => {
+            const email = req.params.email;
+
+            if (email !== req.decoded.email) {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            let deliveryMan = false;
+            if (user) {
+                deliveryMan = user?.type === 'DeliveryMen';
+            }
+            res.send({ admin: deliveryMan });
+        });
+
+
         app.get('/users/type/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
 
