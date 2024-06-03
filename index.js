@@ -61,6 +61,23 @@ async function run() {
             res.send(result);
         });
 
+        app.put('/users/:email', verifyToken, async (req, res) => {
+            const email = req.params.email;
+            const filter = { email: email }
+            const options = { upsert: true };
+            const updateUser = req.body;
+
+            const user = {
+                $set: {
+                    photo: updateUser.photo,
+                    name: updateUser.name,
+                }
+            }
+
+            const result = await userCollection.updateOne(filter, user, options);
+            res.send(result);
+        })
+
         app.get('/users/admin/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
 
