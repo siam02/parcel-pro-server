@@ -91,7 +91,7 @@ async function run() {
             if (user) {
                 deliveryMan = user?.type === 'DeliveryMen';
             }
-            res.send({ admin: deliveryMan });
+            res.send({ deliveryMan: deliveryMan });
         });
 
 
