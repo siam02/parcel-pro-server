@@ -149,6 +149,21 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/parcels/:email', verifyToken, async (req, res) => {
+
+            const email = req.params.email;
+
+            if (email !== req.decoded.email) {
+                return res.status(403).send({ message: 'forbidden access' })
+            }
+
+            const query = { email: email }
+            const cursor = parcelCollection.find(query);
+            const result = await cursor.toArray();
+            res.send(result);
+
+        })
+
 
     }
     finally {
