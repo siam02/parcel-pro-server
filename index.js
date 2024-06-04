@@ -162,6 +162,18 @@ async function run() {
             const result = await cursor.toArray();
             res.send(result);
 
+        });
+
+        app.patch('/parcels/cancel/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDoc = {
+              $set: {
+                status: 'cancelled'
+              }
+            }
+            const result = await parcelCollection.updateOne(filter, updatedDoc);
+            res.send(result);
         })
 
 
