@@ -29,13 +29,19 @@ async function run() {
     try {
 
         const userCollection = client.db("parcelProDB").collection("users");
+        const parcelCollection = client.db("parcelProDB").collection("parcels");
 
+
+        //JWT API
         app.post('/jwt', async (req, res) => {
             const user = req.body;
             const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, { expiresIn: '1h' });
             res.send({ token });
         })
 
+
+
+        // Middlewares
         const verifyToken = (req, res, next) => {
             if (!req.headers.authorization) {
                 return res.status(401).send({ message: 'unauthorized access' });
@@ -50,6 +56,11 @@ async function run() {
             })
         }
 
+
+
+
+
+        // User Related API
         app.post('/users', async (req, res) => {
             const user = req.body;
             const query = { email: user.email }
@@ -126,6 +137,16 @@ async function run() {
                 type = user?.type;
             }
             res.send({ type: type });
+        });
+
+
+
+
+        // Parcel Reclated API
+        app.post('/parcels', verifyToken, async (req, res) => {
+            const parcel = req.body;
+            const result = await parcelCollection.insertOne(parcel);
+            res.send(result);
         });
 
 
