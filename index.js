@@ -149,7 +149,7 @@ async function run() {
             res.send(result);
         });
 
-        app.get('/parcels/:email', verifyToken, async (req, res) => {
+        app.get('/parcels-by-email/:email', verifyToken, async (req, res) => {
 
             const email = req.params.email;
 
@@ -168,9 +168,9 @@ async function run() {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
             const updatedDoc = {
-              $set: {
-                status: 'cancelled'
-              }
+                $set: {
+                    status: 'cancelled'
+                }
             }
             const result = await parcelCollection.updateOne(filter, updatedDoc);
             res.send(result);
@@ -181,7 +181,32 @@ async function run() {
             const query = { _id: new ObjectId(id) }
             const result = await parcelCollection.findOne(query);
             res.send(result);
-          })
+        })
+
+        app.put('/parcels/:id', async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) }
+            const options = { upsert: true };
+            const updateParcel = req.body;
+
+            const parcel = {
+                $set: {
+                    phoneNumber: updateParcel.phoneNumber,
+                    parcelType: updateParcel.parcelType,
+                    parcelWeight: updateParcel.parcelWeight,
+                    receiverName: updateParcel.receiverName,
+                    receiverPhone: updateParcel.receiverPhone,
+                    deliveryAddress: updateParcel.deliveryAddress,
+                    reqDeliveryDate: updateParcel.reqDeliveryDate,
+                    latitude: updateParcel.latitude,
+                    longitude: updateParcel.longitude,
+                    price: updateParcel.price,
+                }
+            }
+
+            const result = await parcelCollection.updateOne(filter, parcel, options);
+            res.send(result);
+        })
 
 
     }
