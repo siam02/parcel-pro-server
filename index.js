@@ -56,6 +56,17 @@ async function run() {
             })
         }
 
+        const verifyAdmin = async (req, res, next) => {
+            const email = req.decoded.email;
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            const isAdmin = user?.type === 'Admin';
+            if (!isAdmin) {
+              return res.status(403).send({ message: 'forbidden access' });
+            }
+            next();
+          }
+
 
 
 
@@ -206,6 +217,37 @@ async function run() {
 
             const result = await parcelCollection.updateOne(filter, parcel, options);
             res.send(result);
+        })
+
+
+        //Statistics
+        app.get('/statistics', verifyToken, verifyAdmin, async (req, res) => {
+            const bookings = await parcelCollection.aggregate([
+                {
+                    $group: {
+                        _id: "$bookingDate",
+                        count: { $sum: 1 },
+                    },
+                },
+                { $sort: { _id: 1 } },
+            ]).toArray();
+
+            const delivered = await parcelCollection.aggregate([
+                { $match: { status: "delivered" } },
+                {
+                    $group: {
+                        _id: "$bookingDate",
+                        count: { $sum: 1 },
+                    },
+                },
+                { $sort: { _id: 1 } },
+            ]).toArray();
+
+            const dates = bookings.map(b => b._id);
+            const bookingsData = bookings.map(b => b.count);
+            const deliveredData = delivered.map(d => d.count);
+
+            res.json({ bookings: bookingsData, delivered: deliveredData, dates });
         })
 
 
