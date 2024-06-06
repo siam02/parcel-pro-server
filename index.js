@@ -134,6 +134,16 @@ async function run() {
         });
 
 
+        app.get('/users/delivery-men', async (req, res) => {
+
+
+            const query = { type: "DeliveryMen" };
+            const deliveryMen = await userCollection.find(query).toArray();
+
+            res.send({ deliveryMen });
+        });
+
+
         app.get('/users/type/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
 
