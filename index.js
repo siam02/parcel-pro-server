@@ -62,10 +62,10 @@ async function run() {
             const user = await userCollection.findOne(query);
             const isAdmin = user?.type === 'Admin';
             if (!isAdmin) {
-              return res.status(403).send({ message: 'forbidden access' });
+                return res.status(403).send({ message: 'forbidden access' });
             }
             next();
-          }
+        }
 
 
 
@@ -140,7 +140,7 @@ async function run() {
             const query = { type: "DeliveryMen" };
             const deliveryMen = await userCollection.find(query).toArray();
 
-            res.send({ deliveryMen });
+            res.send(deliveryMen);
         });
 
 
@@ -200,6 +200,22 @@ async function run() {
                 }
             }
             const result = await parcelCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        })
+
+        app.patch('/parcels/update-admin/:id', verifyToken, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updateParcel = req.body;
+            const parcel = {
+                $set: {
+                    deliveryManID: updateParcel.deliveryManID,
+                    approxDeliveryDate: updateParcel.approxDeliveryDate,
+                    status: "On The Way"
+                }
+            }
+            const result = await parcelCollection.updateOne(filter, parcel, options);
             res.send(result);
         })
 
