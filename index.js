@@ -154,6 +154,12 @@ async function run() {
 
 
         // Parcel Reclated API
+        app.get('/parcels', verifyToken, verifyAdmin, async (req, res) => {
+            const cursor = parcelCollection.find();
+            const result = await cursor.toArray();
+            res.send(result);
+        });
+
         app.post('/parcels', verifyToken, async (req, res) => {
             const parcel = req.body;
             const result = await parcelCollection.insertOne(parcel);
