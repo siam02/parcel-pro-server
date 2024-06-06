@@ -165,7 +165,19 @@ async function run() {
 
         // Parcel Reclated API
         app.get('/parcels', verifyToken, verifyAdmin, async (req, res) => {
-            const cursor = parcelCollection.find();
+
+            const { startDate, endDate } = req.query;
+            const query = {};
+
+            if (startDate && endDate) {
+                query.reqDeliveryDate = {
+                  $gte: startDate,
+                  $lte: endDate
+                };
+              }
+
+            const cursor = parcelCollection.find(query);
+            
             const result = await cursor.toArray();
             res.send(result);
         });
