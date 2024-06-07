@@ -311,6 +311,16 @@ async function run() {
         })
 
 
+        // Delivery Man Related
+
+        app.get('/delivery-man-delivered-count/:id', async (req, res) => {
+            const id = req.query.id;
+            const query = { deliveryManID: id, status: "delivered" }
+            const count = await parcelCollection.countDocuments(query);
+            res.send({ count });
+        })
+
+
     }
     finally {
 
