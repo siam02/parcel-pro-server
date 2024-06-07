@@ -162,7 +162,7 @@ async function run() {
         });
 
 
-        app.get('/user-by-email/:email', async (req, res) => {
+        app.get('/user-by-email/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
             const query = { email: email };
             const user = await userCollection.findOne(query);
