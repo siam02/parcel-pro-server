@@ -30,6 +30,7 @@ async function run() {
 
         const userCollection = client.db("parcelProDB").collection("users");
         const parcelCollection = client.db("parcelProDB").collection("parcels");
+        const reviewCollection = client.db("parcelProDB").collection("reviews");
 
 
         //JWT API
@@ -82,6 +83,32 @@ async function run() {
             const result = await userCollection.insertOne(user);
             res.send(result);
         });
+
+        app.get('/users', async (req, res) => {
+            const page = parseInt(req.query.page);
+            const size = parseInt(req.query.size);
+
+            const query = { type: "User" };
+
+            const users = await userCollection.find(query)
+                .skip(page * size)
+                .limit(size)
+                .toArray();
+            res.send(users);
+        });
+
+        app.get('/userCount', async (req, res) => {
+            const query = { type: "User" };
+            const count = await userCollection.countDocuments(query);
+            res.send({ count });
+        })
+
+        app.get('/user-booking-count/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email }
+            const count = await parcelCollection.countDocuments(query);
+            res.send({ count });
+        })
 
         app.put('/users/:email', verifyToken, async (req, res) => {
             const email = req.params.email;
@@ -136,11 +163,8 @@ async function run() {
 
 
         app.get('/users/delivery-men', async (req, res) => {
-
-
             const query = { type: "DeliveryMen" };
             const deliveryMen = await userCollection.find(query).toArray();
-
             res.send(deliveryMen);
         });
 
@@ -160,6 +184,19 @@ async function run() {
             }
             res.send({ type: type });
         });
+
+        app.patch('/users/type/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const type = req.query.type;
+            const filter = { _id: new ObjectId(id) };
+            const updatedDoc = {
+                $set: {
+                    type: type
+                }
+            }
+            const result = await userCollection.updateOne(filter, updatedDoc);
+            res.send(result);
+        })
 
 
         app.get('/user-by-email/:email', verifyToken, async (req, res) => {
@@ -187,13 +224,13 @@ async function run() {
 
             if (startDate && endDate) {
                 query.reqDeliveryDate = {
-                  $gte: startDate,
-                  $lte: endDate
+                    $gte: startDate,
+                    $lte: endDate
                 };
-              }
+            }
 
             const cursor = parcelCollection.find(query);
-            
+
             const result = await cursor.toArray();
             res.send(result);
         });
@@ -313,11 +350,30 @@ async function run() {
 
         // Delivery Man Related
 
-        app.get('/delivery-man-delivered-count/:id', async (req, res) => {
-            const id = req.query.id;
+        app.get('/delivery-man-delivered-count/:id', verifyToken, verifyAdmin, async (req, res) => {
+            const id = req.params.id;
             const query = { deliveryManID: id, status: "delivered" }
             const count = await parcelCollection.countDocuments(query);
             res.send({ count });
+        })
+
+        app.get('/delivery-man-average-rating/:id', async (req, res) => {
+            const id = req.params.id;
+            const result = await reviewCollection.aggregate([
+                {
+                    $match: { deliveryManID: id }
+                },
+                {
+                    $group: {
+                        _id: '$deliveryManID',
+                        averageRating: { $avg: '$rating' }
+                    }
+                }
+            ]).toArray();
+
+            const averageRating = result.length > 0 ? result[0].averageRating : 0;
+
+            res.json({ averageRating });
         })
 
 
