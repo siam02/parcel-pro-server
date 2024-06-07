@@ -93,6 +93,7 @@ async function run() {
                 $set: {
                     photo: updateUser.photo,
                     name: updateUser.name,
+                    phoneNumber: updateUser.phoneNumber
                 }
             }
 
@@ -158,6 +159,21 @@ async function run() {
                 type = user?.type;
             }
             res.send({ type: type });
+        });
+
+
+        app.get('/user-by-email/:email', async (req, res) => {
+            const email = req.params.email;
+            const query = { email: email };
+            const user = await userCollection.findOne(query);
+            res.send(user);
+        });
+
+        app.get('/user-by-id/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const query = { _id: new ObjectId(id) }
+            const result = await userCollection.findOne(query);
+            res.send(result);
         });
 
 
