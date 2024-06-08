@@ -316,6 +316,13 @@ async function run() {
             res.send(result);
         })
 
+        app.get('/parcels/delivery-man/:id', async (req, res) => {
+            const id = req.params.id;
+            const query = { deliveryManID: id }
+            const result = await parcelCollection.find(query).toArray();
+            res.send(result);
+        })
+
 
         //Statistics
         app.get('/statistics', verifyToken, verifyAdmin, async (req, res) => {
@@ -375,6 +382,8 @@ async function run() {
 
             res.json({ averageRating });
         })
+
+        
 
 
     }
