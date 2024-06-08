@@ -395,6 +395,12 @@ async function run() {
             res.json({ averageRating });
         })
 
+        app.post('/delivery-man/review', verifyToken, async (req, res) => {
+            const review = req.body;
+            const result = await reviewCollection.insertOne(review);
+            res.send(result);
+        });
+
         
 
 
