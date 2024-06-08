@@ -401,6 +401,13 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/delivery-man/reviews/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const query = { deliveryManID: id }
+            const result = await reviewCollection.find(query).toArray();
+            res.send(result);
+        });
+
         
 
 
