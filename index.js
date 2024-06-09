@@ -9,7 +9,7 @@ const port = process.env.PORT || 5000;
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
 
 app.use(cors({
-    origin: ['http://localhost:5173', 'http://localhost:5174'],
+    origin: ['http://localhost:5173', 'http://localhost:5174', 'https://parcel-pro-client.web.app'],
     credentials: true
 }));
 
@@ -542,9 +542,9 @@ run().catch(console.dir);
 
 
 app.get('/', (req, res) => {
-    res.send('Parvel Pro server is running')
+    res.send('Parcel Pro server is running')
 })
 
 app.listen(port, () => {
-    console.log(`Parvel Pro Server is running on port: ${port}`)
+    console.log(`Parcel Pro Server is running on port: ${port}`)
 })
