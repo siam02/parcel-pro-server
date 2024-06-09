@@ -237,6 +237,17 @@ async function run() {
             res.send(result);
         });
 
+        app.get('/parcelsCount', async (req, res) => {
+            const count = await parcelCollection.countDocuments();
+            res.send({ count });
+        })
+
+        app.get('/deliveredParcelsCount', async (req, res) => {
+            const query = { status: "delivered" };
+            const count = await parcelCollection.countDocuments(query);
+            res.send({ count });
+        })
+
         app.post('/parcels', verifyToken, async (req, res) => {
             const parcel = req.body;
             const result = await parcelCollection.insertOne(parcel);
