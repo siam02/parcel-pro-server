@@ -282,6 +282,19 @@ async function run() {
             res.send(result);
         });
 
+        app.patch('/parcels/payment/:id', verifyToken, async (req, res) => {
+            const id = req.params.id;
+            const filter = { _id: new ObjectId(id) };
+            const options = { upsert: true };
+            const updatedDoc = {
+                $set: {
+                    paymentStatus: 'Paid'
+                }
+            }
+            const result = await parcelCollection.updateOne(filter, updatedDoc, options);
+            res.send(result);
+        });
+
         app.patch('/parcels/update-admin/:id', verifyToken, verifyAdmin, async (req, res) => {
             const id = req.params.id;
             const filter = { _id: new ObjectId(id) };
