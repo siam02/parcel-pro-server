@@ -435,6 +435,83 @@ async function run() {
         });
 
 
+        app.get('/top-delivery-men', async (req, res) => {
+            const deliveryMen = await userCollection.aggregate([
+                {
+                    $match: { type: "DeliveryMen" }
+                },
+                {
+                    $lookup: {
+                        from: 'parcels',
+                        let: { deliveryManId: '$_id' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $and: [
+                                            { $eq: ['$deliveryManID', { $toString: '$$deliveryManId' }] },
+                                            { $eq: ['$status', 'delivered'] }
+                                        ]
+                                    }
+                                }
+                            }
+                        ],
+                        as: 'deliveredParcels'
+                    }
+                },
+                {
+                    $addFields: {
+                        deliveredCount: { $size: '$deliveredParcels' }
+                    }
+                },
+                {
+                    $lookup: {
+                        from: 'reviews',
+                        let: { deliveryManId: '$_id' },
+                        pipeline: [
+                            {
+                                $match: {
+                                    $expr: {
+                                        $eq: ['$deliveryManID', { $toString: '$$deliveryManId' }]
+                                    }
+                                }
+                            },
+                            {
+                                $group: {
+                                    _id: null,
+                                    averageRating: { $avg: '$rating' }
+                                }
+                            }
+                        ],
+                        as: 'ratingInfo'
+                    }
+                },
+                {
+                    $addFields: {
+                        averageRating: { $arrayElemAt: ['$ratingInfo.averageRating', 0] }
+                    }
+                },
+                {
+                    $sort: { deliveredCount: -1 }
+                },
+                {
+                    $limit: 3
+                },
+                {
+                    $project: {
+                        _id: 1,
+                        email: 1,
+                        name: 1,
+                        photo: 1,
+                        deliveredCount: 1,
+                        averageRating: 1
+                    }
+                }
+            ]).toArray();
+
+            res.send(deliveryMen);
+        });
+
 
         //Payment related
         app.post('/create-payment-intent', async (req, res) => {
