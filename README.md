@@ -22,7 +22,7 @@ git clone https://github.com/siam02/parcel-pro-server.git
 2. Install dependencies:
 
 ```bash
-cd southeast-explorer-backend
+cd parcel-pro-server
 npm install
 ```
 
