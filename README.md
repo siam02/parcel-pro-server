@@ -35,11 +35,13 @@ cd parcel-pro-server
 npm install
 ```
 
-3. Create a .env file in the root directory and add your MongoDB credentials:
+3. Create a .env file in the root directory and add your MongoDB and other credentials:
 
  ```env
 DB_USER=your-mongodb-user
 DB_PASS=your-mongodb-pass
+ACCESS_TOKEN_SECRET=jwt-access-token
+STRIPE_SECRET_KEY=stripe-secret-key
 ```
 
 4. Start the development server:
