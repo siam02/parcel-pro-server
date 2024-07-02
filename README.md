@@ -11,6 +11,15 @@ ParcelPro is a comprehensive parcel delivery management application. The backend
 - Review and rating system for delivery men
 - Statistical data endpoints for admin
 
+## Technologies Used
+
+- Node.js
+- Express
+- MongoDB with Mongoose
+- JWT for authentication
+- Stripe for payment processing
+- dotenv for environment variables
+
 ## Installation
 
 1. Clone the repository:
