@@ -15,7 +15,7 @@ ParcelPro is a comprehensive parcel delivery management application. The backend
 
 - Node.js
 - Express
-- MongoDB with Mongoose
+- MongoDB
 - JWT for authentication
 - Stripe for payment processing
 - dotenv for environment variables
